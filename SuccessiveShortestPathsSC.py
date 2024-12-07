@@ -1,5 +1,6 @@
 from collections import defaultdict
 import math
+from tabulate import tabulate
 
 
 class DirectedGraph:
@@ -143,40 +144,63 @@ def load_graph_from_file(filename):
     return graph, source, sink
 
 
+def main():
+    results = []
+    parameter_sets = [
+        (100, 0.2, 8, 5),
+        (200, 0.2, 8, 5),
+        (100, 0.3, 8, 5),
+        (200, 0.3, 8, 5),
+        (100, 0.2, 64, 20),
+        (200, 0.2, 64, 20),
+        (100, 0.3, 64, 20),
+        (200, 0.3, 64, 20)
+    ]
+
+    for i, (n, r, upper_cap, upper_cost) in enumerate(parameter_sets, 1):
+        filename = f"graph_{i}_n{n}_r{r}_cap{upper_cap}_cost{upper_cost}.edges"
+        
+        try:
+            # Load the graph
+            graph, source, sink = load_graph_from_file(filename)
+            
+            # Graph metrics
+            num_nodes = graph.number_of_nodes()
+            LCC = graph.largest_connected_component()
+            VLCC = len(LCC) if LCC else 0
+            
+            if VLCC > 0:
+                in_degree, out_degree = graph.compute_in_out_degree(LCC)
+                max_out_degree = max(out_degree.values(), default=0)
+                max_in_degree = max(in_degree.values(), default=0)
+                avg_degree = sum(in_degree[v] + out_degree[v] for v in LCC) / VLCC
+            else:
+                max_out_degree = max_in_degree = avg_degree = 0
+
+            # Flow calculation
+            demand = 10
+            flow, cost, _, path_lengths = successive_shortest_paths_with_scaling(graph, source, sink, demand)
+            flow_result = flow if flow else "-"
+            
+            # Append results
+            results.append([
+                i, num_nodes, r, upper_cap, upper_cost, flow_result,
+                VLCC, max_out_degree, max_in_degree, round(avg_degree, 2)
+            ])
+
+        except Exception as e:
+            print(f"Error processing {filename}: {e}")
+            results.append([i, n, r, upper_cap, upper_cost, "-", "-", "-", "-", "-"])
+
+    # Table headers
+    headers = [
+        "Graph", "n", "r", "upperCap", "upperCost", "$f_{max}$", 
+        "|V_{LCC}|", "Δ_{out}(LCC)", "Δ_{in}(LCC)", "k̅(LCC)"
+    ]
+    
+    # Print the table
+    print(tabulate(results, headers=headers, tablefmt="grid"))
+
 if __name__ == "__main__":
-    filename = "graph_1_n100_r0.2_cap8_cost5.edges"
+    main()
 
-    graph, source, sink = load_graph_from_file(filename)
-
-    print(f"Source Node: {source}")
-    print(f"Sink Node: {sink}")
-
-    n = graph.number_of_nodes()
-    print(f"Number of Nodes: {n}")
-
-    LCC = graph.largest_connected_component()
-    VLCC = len(LCC)
-    in_degree, out_degree = graph.compute_in_out_degree(LCC)
-    max_out_degree = max(out_degree.values())
-    max_in_degree = max(in_degree.values())
-    avg_degree = sum(in_degree[v] + out_degree[v] for v in LCC) / VLCC
-
-    print(f"|VLCC|: {VLCC}")
-    print(f"∆out(LCC): {max_out_degree}")
-    print(f"∆in(LCC): {max_in_degree}")
-    print(f"k(LCC): {avg_degree:.2f}")
-
-    demand = 10
-    flow, cost, paths, path_lengths = successive_shortest_paths_with_scaling(graph, source, sink, demand)
-    if flow is None:
-        print("Failure: Could not meet the required flow.")
-    else:
-        mean_length = sum(path_lengths) / len(path_lengths) if path_lengths else 0
-        max_path_length = max(path_lengths) if path_lengths else 1
-        mean_proportional_length = mean_length / max_path_length
-
-        print(f"Total Flow: {flow}")
-        print(f"Total Cost: {cost}")
-        print(f"Number of Augmenting Paths: {paths}")
-        print(f"Mean Length (ML): {mean_length:.2f}")
-        print(f"Mean Proportional Length (MPL): {mean_proportional_length:.2f}")
