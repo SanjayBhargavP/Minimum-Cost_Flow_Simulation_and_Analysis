@@ -34,14 +34,14 @@ class Main:
         )
         self.print_results(flow, cost, num_paths, mean_length, mean_proportional_length )
 
-    def run_successive_shortest_paths(self):
-        """Executes the Successive Shortest Paths Algorithm with metrics."""
-        print(f"Running Capacity Scaling Algorithm with demand = {self.demand}...")
-        flow, cost, num_paths, mean_length, mean_proportional_length = successive_shortest_paths_with_metrics(
-            self.graph, self.source, self.sink, self.demand
-        )
-        print("\n=== Capacity Scaling Results ===")
-        self.print_results(flow, cost, num_paths, mean_length, mean_proportional_length )
+    # def run_successive_shortest_paths(self):
+    #     """Executes the Successive Shortest Paths Algorithm with metrics."""
+    #     print(f"Running Capacity Scaling Algorithm with demand = {self.demand}...")
+    #     flow, cost, num_paths, mean_length, mean_proportional_length = successive_shortest_paths_with_metrics(
+    #         self.graph, self.source, self.sink, self.demand
+    #     )
+    #     print("\n=== Capacity Scaling Results ===")
+    #     self.print_results(flow, cost, num_paths, mean_length, mean_proportional_length )
 
     def print_results(self,flow, cost, num_paths, mean_length, mean_proportional_length ):
         if flow is not None:
