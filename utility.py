@@ -226,3 +226,60 @@ def bfs_farthest_node(graph, source):
     print(f"Farthest Node from {source}: {farthest_node} (Distance: {max_distance})")
     return farthest_node
 
+def bellman_ford_capacity_scaling(graph, source, sink, delta):
+        """Shortest path algorithm to find minimum-cost augmenting paths."""
+        distance = {node: float('inf') for node in graph.adjacency_list}
+        parent = {node: None for node in graph.adjacency_list}
+        distance[source] = 0
+
+        for _ in range(len(graph.adjacency_list) - 1):
+            for edge in graph.edges:
+                if edge.capacity - edge.flow >= delta and distance[edge.from_node] + edge.cost < distance[edge.to_node]:
+                    distance[edge.to_node] = distance[edge.from_node] + edge.cost
+                    parent[edge.to_node] = edge
+
+        # Check if sink is reachable
+        if distance[sink] == float('inf'):
+            return None, 0
+
+        # Backtrack to find the path
+        path = []
+        node = sink
+        while node != source:
+            edge = parent[node]
+            path.append(edge)
+            node = edge.from_node
+        path.reverse()
+
+        # Determine the bottleneck capacity along the path
+        bottleneck = min(edge.capacity - edge.flow for edge in path)
+        return path, bottleneck
+
+
+def find_longest_acyclic_path(graph, source, sink):
+    """Find the longest acyclic path in a graph."""
+    visited = set()
+    stack = []
+
+    def dfs(node):
+        if node in visited:
+            return
+        visited.add(node)
+        for edge in graph.adjacency_list[node]:
+            if edge.capacity > 0:  # Only consider edges with positive capacity
+                dfs(edge.to_node)
+        stack.append(node)
+
+    dfs(source)
+    stack.reverse()
+
+    distances = {node: float('-inf') for node in graph.adjacency_list}
+    distances[source] = 0
+
+    for node in stack:
+        for edge in graph.adjacency_list[node]:
+            if edge.capacity > 0 and distances[node] + 1 > distances[edge.to_node]:
+                distances[edge.to_node] = distances[node] + 1
+
+    return distances[sink] if distances[sink] != float('-inf') else 0
+

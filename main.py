@@ -1,6 +1,8 @@
 #main.py
 
 import os
+
+from capacity_scaling import capacity_scaling_with_metrics
 from source_sink_graph_generator import generate_graphs_for_simulation
 from successive_shortest_paths import successive_shortest_paths
 from utility import (
@@ -57,6 +59,8 @@ for filename in os.listdir(simulation1_dir):
         fmax = run_ford_fulkerson_and_write_results(graph, source, sink, result_file, filename)
 
         print(successive_shortest_paths(graph, source, sink, 0.95*fmax))
+
+        print(capacity_scaling_with_metrics(graph, source, sink, 0.95*fmax))
 
 
 
