@@ -19,6 +19,7 @@ def bellman_ford(graph, source):
 
 # Successive Shortest Path Algorithm
 def successive_shortest_paths(graph, source, sink, total_flow):
+    print("==== SUCCESIVE SHORTEST PATHS ====")
     flow = 0
     total_cost = 0
     augmenting_paths = 0
@@ -54,10 +55,10 @@ def successive_shortest_paths(graph, source, sink, total_flow):
             for edge in graph.adjacency_list[u]:
                 if edge.to_node == v:
                     edge.capacity -= path_flow
+                    total_cost += path_flow * edge.cost
             for edge in graph.adjacency_list[v]:
                 if edge.to_node == u:
                     edge.capacity += path_flow
-                    total_cost += path_flow * edge.cost
                     break
             v = u
 

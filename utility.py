@@ -133,15 +133,21 @@ def run_ford_fulkerson_and_write_results(graph, source, sink, file_path, filenam
     lcc = find_largest_connected_component(graph)
     metrics = calculate_graph_metrics(graph, lcc)
 
+
+#    Format the results writing
+    result_format = f"{{:<{36}}}\t{{:<8}}\t{{:<8}}\t{{:<10}}\t{{:<10}}\t{{:<8.4f}}\n"
+
     # Write results to file
     with open(file_path, 'a') as results:
-        results.write(
-            f"{filename}\t{max_flow}\t{metrics['|VLCC|']}\t"
-            f"{metrics['∆out(LCC)']}\t{metrics['∆in(LCC)']}\t"
-            f"{metrics['k(LCC)']:.4f}\n"
-        )
-
-    print(f"Processed {filename} | fmax: {max_flow}, Metrics: {metrics}")
+        results.write(result_format.format(
+            filename,
+            max_flow,
+            metrics['|VLCC|'],
+            metrics['∆out(LCC)'],
+            metrics['∆in(LCC)'],
+            metrics['k(LCC)']
+        ))
+        print(f"Processed {filename} | fmax: {max_flow}, Metrics: {metrics}")
 
     return max_flow
 
@@ -282,4 +288,26 @@ def find_longest_acyclic_path(graph, source, sink):
                 distances[edge.to_node] = distances[node] + 1
 
     return distances[sink] if distances[sink] != float('-inf') else 0
+
+
+def print_results(flow, cost, num_paths, mean_length, mean_proportional_length,file_path,algo,graphNo):
+    if flow is not None:
+        print(f"flow:{flow} | cost:{cost} | paths:{num_paths} | ML:{mean_length} | MPL:{mean_proportional_length}")
+    else:
+        print("\nFailed to meet the flow demand.")
+    print("---------------------")
+
+    algo_header_format = f"{{:<{15}}}\t{{:<6}}\t{{:<6.4f}}\t{{:<10.4f}}\t{{:<10}}\t{{:<8.4f}}\t{{:<8.4f}}"
+
+    with open(file_path, 'a') as results:
+        results.write(algo_header_format.format(
+            algo,
+            graphNo,
+            flow,
+            cost,
+            num_paths,
+            mean_length,
+            mean_proportional_length
+        ))
+        results.write("\n")
 

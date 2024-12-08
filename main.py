@@ -1,5 +1,6 @@
 #main.py
 
+import copy
 import os
 
 from capacity_scaling import capacity_scaling_with_metrics
@@ -9,7 +10,8 @@ from utility import (
     load_graph_from_file,
     find_largest_connected_component,
     bfs_farthest_node,
-    run_ford_fulkerson_and_write_results
+    run_ford_fulkerson_and_write_results,
+    print_results
 )
 
 # Define parameter sets for Simulation1
@@ -30,13 +32,32 @@ generate_graphs_for_simulation(parameter_sets_simulation1, "Simulation1")
 # Define directory for Simulation1 files
 simulation1_dir = "./Graphs/Simulation1"
 
-result_file = os.path.join("./Results", "simulation1_ford_fulkerson_results.txt")
+result_file1 = os.path.join("./Results", "simulation1_ford_fulkerson_results.txt")
+result_file2 = os.path.join("./Results","simulation1_algorithms_results.txt")
 os.makedirs("./Results", exist_ok=True)
 
-# Create result file with headers
-with open(result_file, 'w', encoding='utf-8') as results:
-    results.write("Graph\tfmax\t|VLCC|\t∆out(LCC)\t∆in(LCC)\tk(LCC)\n")
+# Determine the maximum filename length in the graph directory
+max_filename_length = max(len(filename) for filename in os.listdir(simulation1_dir) if filename.endswith(".edges"))
 
+# Format the header with dynamic spacing
+ford_header_format = f"{{:<{max_filename_length}}}\tfmax\t|VLCC|\t∆out(LCC)\t∆in(LCC)\tk(LCC)\n"
+
+# Create result file with headers
+with open(result_file1, 'w', encoding='utf-8') as results:
+    results.write(ford_header_format.format("Graph"))
+
+algo_header_format = f"{{:<{15}}}\t{{:<6}}\t{{:<6}}\t{{:<10}}\t{{:<10}}\t{{:<8}}\t{{:<8}}"
+
+# Create result file with headers
+with open(result_file2, 'w', encoding='utf-8') as results:
+    results.write(algo_header_format.format("Algorithm","Graph","f","MC","paths","ML","MPL"))
+    results.write("\n")
+
+graph_number=1
+algo_ssp = "SSP"
+algo_cs ="CS"
+algo_ssps="SSPCS"
+algo_yours="YOURS" ##CHANGE HERE
 # Process each graph file
 for filename in os.listdir(simulation1_dir):
     if filename.endswith(".edges"):
@@ -52,17 +73,30 @@ for filename in os.listdir(simulation1_dir):
         source = lcc[0]  # Start node from LCC
         sink = bfs_farthest_node(graph, source)
 
-        print(source)
-        print(sink)
+        print("Source:{}".format(source))
+        print("Sink:{}".format(sink))
+
+        graph_copy_ssp = copy.deepcopy(graph)
+        graph_copy_cs = copy.deepcopy(graph)
+
 
         # Run algorithm and write results
-        fmax = run_ford_fulkerson_and_write_results(graph, source, sink, result_file, filename)
+        fmax = run_ford_fulkerson_and_write_results(graph, source, sink, result_file1, filename)
+        demand = 0.95*fmax
+        
+        print("Max flow using Ford Fulkerson={}".format(fmax))
+        print("Demand={}".format(demand))
+        print()
 
-        print(successive_shortest_paths(graph, source, sink, 0.95*fmax))
+        successive_shortest_paths(graph_copy_ssp, source, sink, demand)
+        print_results(flow,cost,paths,ml,mpl,result_file2,algo_ssp,graph_number)
+        flow,cost,paths,ml,mpl = capacity_scaling_with_metrics(graph_copy_cs, source, sink, demand)
+        print_results(flow,cost,paths,ml,mpl,result_file2,algo_cs,graph_number)
+        
+        with open(result_file2, 'a', encoding='utf-8') as results:
+            results.write("-" * 110 + "\n")
 
-        print(capacity_scaling_with_metrics(graph, source, sink, 0.95*fmax))
-
-
+        graph_number+=1
 
 print("Simulation1 processing completed.")
 

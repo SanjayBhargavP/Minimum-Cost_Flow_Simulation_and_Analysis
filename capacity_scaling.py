@@ -5,6 +5,7 @@ from collections import defaultdict
 # Capacity Scaling Algorithm
 
 def capacity_scaling_with_metrics(graph, source, sink, demand):
+    print("==== CAPACITY SCALING ====")
     max_capacity = max(edge.capacity for edge in graph.edges)
     scaling_factor = 2 ** (math.floor(math.log2(max_capacity)))
     total_flow = 0
