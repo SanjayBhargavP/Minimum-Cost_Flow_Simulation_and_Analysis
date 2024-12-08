@@ -161,15 +161,15 @@ def find_largest_connected_component(graph):
     largest_component = []
 
     def dfs(node, component):
-        visited.add(node)
         component.append(node)
         for edge in graph.adjacency_list[node]:
-            if edge.to_node not in visited:
+            if edge.to_node not in component:
                 dfs(edge.to_node, component)
 
-    for node in graph.adjacency_list:
+    for node in list(graph.adjacency_list.keys()):
         if node not in visited:
             component = []
+            visited.add(node)
             dfs(node, component)
             if len(component) > len(largest_component):
                 largest_component = component

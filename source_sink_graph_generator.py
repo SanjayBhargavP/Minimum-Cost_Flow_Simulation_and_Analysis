@@ -50,8 +50,7 @@ def generate_sink_source_graph(n, r, upper_cap, upper_cost):
     for u in range(n):
         for v in range(n):
             if u != v:
-                dist = (coordinates[u][0] - coordinates[v][0]) ** 2 + \
-                       (coordinates[u][1] - coordinates[v][1]) ** 2
+                dist = (coordinates[u][0] - coordinates[v][0]) ** 2 + (coordinates[u][1] - coordinates[v][1]) ** 2
                 if dist <= r ** 2:
                     rand = random.uniform(0, 1)
                     if rand < 0.3 and not G.has_edge(u, v) and not G.has_edge(v, u):

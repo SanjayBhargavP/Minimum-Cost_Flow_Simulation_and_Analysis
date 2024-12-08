@@ -25,7 +25,7 @@ class Graph:
         backward_edge.reverse_edge = forward_edge
 
         self.adjacency_list[from_node].append(forward_edge)
-        self.adjacency_list[to_node].append(backward_edge)
+        # self.adjacency_list[to_node].append(backward_edge)
         self.edges.append(forward_edge)
 
     def get_neighbors(self, node):
@@ -36,3 +36,14 @@ class Graph:
             for edge in edges:
                 if edge.capacity > 0:
                     print(f"{node} -> {edge.to_node} | Capacity: {edge.capacity}, Cost: {edge.cost}, Flow: {edge.flow}")
+
+    def __str__(self):
+        result = []
+        for node, edges in self.adjacency_list.items():
+            connections = []
+            for edge in edges:
+                if edge.capacity > 0:
+                    connections.append(str(edge.to_node))
+            if connections:
+                result.append(f"{node} -> {', '.join(connections)}")
+        return '\n'.join(result)
