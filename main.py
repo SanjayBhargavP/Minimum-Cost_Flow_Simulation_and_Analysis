@@ -88,7 +88,7 @@ for filename in os.listdir(simulation1_dir):
         print("Demand={}".format(demand))
         print()
 
-        successive_shortest_paths(graph_copy_ssp, source, sink, demand)
+        flow,cost,paths,ml,mpl = successive_shortest_paths(graph_copy_ssp, source, sink, demand)
         print_results(flow,cost,paths,ml,mpl,result_file2,algo_ssp,graph_number)
         flow,cost,paths,ml,mpl = capacity_scaling_with_metrics(graph_copy_cs, source, sink, demand)
         print_results(flow,cost,paths,ml,mpl,result_file2,algo_cs,graph_number)
