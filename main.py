@@ -16,14 +16,14 @@ from utility import (
 
 # Define parameter sets for Simulation1
 parameter_sets_simulation1 = [
-    (100, 0.2, 8, 5),
-    (200, 0.2, 8, 5),
-    (100, 0.3, 8, 5),
-    (200, 0.3, 8, 5),
-    (100, 0.2, 64, 20),
-    (200, 0.2, 64, 20),
-    (100, 0.3, 64, 20),
-    (200, 0.3, 64, 20)
+    (100, 0.2, 50, 5),
+    (200, 0.2, 80, 5),
+    (100, 0.3, 25, 5),
+    (200, 0.3, 90, 5),
+    (600, 0., 78, 20),
+    (200, 0.2, 100, 20),
+    (250, 0.6, 100, 20),
+    (500, 0.5, 150, 20)
 ]
 
 # Generate Graph Files
@@ -88,7 +88,7 @@ for filename in os.listdir(simulation1_dir):
         print("Demand={}".format(demand))
         print()
 
-        successive_shortest_paths(graph_copy_ssp, source, sink, demand)
+        flow,cost,paths,ml,mpl = successive_shortest_paths(graph_copy_ssp, source, sink, demand)
         print_results(flow,cost,paths,ml,mpl,result_file2,algo_ssp,graph_number)
         flow,cost,paths,ml,mpl = capacity_scaling_with_metrics(graph_copy_cs, source, sink, demand)
         print_results(flow,cost,paths,ml,mpl,result_file2,algo_cs,graph_number)
