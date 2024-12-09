@@ -1,58 +1,136 @@
-# Minimum Cost Flow Algorithms Simulation
 
-## Project Overview
-This project implements and compares several minimum cost flow algorithms, including:
-- Successive Shortest Paths (SSP)
-- Capacity Scaling (CS)
-- Successive Shortest Paths with Capacity Scaling (SSPCS)
-- Primal-Dual Algorithm (PD)
+# **Minimum-Cost Flow Simulation and Analysis**
 
-The simulation generates random graphs and runs these algorithms to compare their performance.
+This project implements and analyzes multiple algorithms for solving **maximum flow** and **minimum-cost flow** problems on directed graphs. It includes graph generation, algorithmic simulations, and performance evaluation.
 
-## Prerequisites
-- Python 3.8 or higher
-- Recommended: Virtual environment
+---
+
+## **Features**
+
+1. **Graph Generation**:
+   - Generates random directed graphs with configurable parameters: number of nodes, edge density, maximum capacity, and cost.
+   - Saves graphs in edge-list format for easy reuse.
+
+2. **Implemented Algorithms**:
+- **Ford-Fulkerson**:
+  - Finds the maximum flow using the Edmonds-Karp BFS-based method.
+- **Successive Shortest Paths (SSP)**:
+  - Iteratively augments the flow along shortest-cost paths.
+- **Capacity Scaling (CS)**:
+  - Focuses on augmenting high capacity paths greater than a threshold delta first to improve efficiency.
+- **Successive Shortest Paths (SSP) with Capacity Scaling(SSPSC)**
+  - Uses the shortest-cost paths from SSP and augments the flow by selecting capacity based on delta
+- **Primal Dual**
+  - (ADD DEFINITION HERE)
+
+3. **Simulation**:
+   - Processes multiple graph configurations and compares the performance of algorithms.
+   - Outputs results, including flow values, costs, path metrics, and graph characteristics.
+
+4. **Metrics Collection**:
+   - Calculates graph properties such as the size of the largest connected component (LCC), in-degree and out-degree statistics, and graph density.
+
+---
+
+## **Directory Structure**
+
+```
+.
+├── Graphs/                # Contains generated graphs (edge-list format)
+├── Results/               # Simulation output files (flow and cost results)
+├── main.py                # Main script for running simulations
+├── utility.py             # Utility functions for graph loading, metrics, and I/O
+├── source_sink_graph_generator.py # Random graph generation functions
 ```
 
-## Project Structure
-- `main.py`: Main simulation script
-- `graph.py`: Graph and Edge class implementations
-- `capacity_scaling.py`: Capacity Scaling algorithm
-- `successive_shortest_paths.py`: Successive Shortest Paths algorithm
-- `primal_dual_algorithm.py`: Primal-Dual algorithm
-- `source_sink_graph_generator.py`: Graph generation utilities
-- `utility.py`: Utility functions for graph operations
+---
 
-## Running the Simulation
+## **Setup and Requirements**
 
-### Generate Graphs and Run Simulation
+### **Dependencies**
+Ensure the following Python libraries are installed:
+- `numpy`
+- `scipy`
+
+To install them, run:
 ```bash
-python main.py
+pip install numpy scipy
 ```
 
-### Expected Outputs
-- Graph files will be generated in `./Graphs/Simulation1` and `./Graphs/Simulation2`
-- Results will be saved in the `./Results` directory:
-  - `simulation_one_ford_fulkerson_results.txt`
-  - `simulation_one_algorithms_results.txt`
-  - `simulation_two_ford_fulkerson_results.txt`
-  - `simulation_two_algorithms_results.txt`
+### **How to Run**
+1. Clone this repository.
+2. Navigate to the project directory:
+   ```bash
+   cd path/to/project
+   ```
+3. Execute the main script:
+   ```bash
+   python main.py
+   ```
 
-## Simulation Parameters
-The simulation uses two sets of parameter configurations:
-- Simulation 1: Graphs with 100-200 nodes, density 0.2-0.3, max capacities 8-64
-- Simulation 2: Graphs with 150-250 nodes, density 0.25-0.35, max capacities 16-128
+---
 
-## Troubleshooting
-- Ensure you're using Python 3.8+
-- Check that all Python files are in the same directory
-- Verify that you have write permissions in the project directory
+## **Usage**
 
-## Understanding the Results
-The results files contain:
-- Graph properties
-- Maximum flow
-- Cost of flow
-- Number of augmenting paths
-- Mean path length
-- Mean proportional path length
+### **Graph Generation**
+Graphs are generated using the `generate_sink_source_graph` function in `source_sink_graph_generator.py`. Customize parameters like:
+- `n`: Number of nodes
+- `r`: Edge density
+- `upperCap`: Maximum edge capacity
+- `upperCost`: Maximum edge cost
+
+Example:
+```python
+from source_sink_graph_generator import generate_sink_source_graph
+
+graph = generate_sink_source_graph(50, 0.2, 20, 100)
+```
+
+### **Run Simulations**
+The main script (`main.py`) performs the following:
+1. Generates graphs based on pre-defined parameter sets.
+2. Runs algorithms (SSP, CS, SSCCP, PD) on each graph.
+3. Saves results in the `Results/` directory.
+
+Parameter sets are added in `main.py`:
+```python
+parameter_sets_simulation1 = [
+    (100, 0.2, 8, 5),
+    (200, 0.2, 8, 5),
+]
+```
+
+### **Analyze Results**
+Results are written to the below files:
+- `simulation1_ford_fulkerson_results.txt`: Maximum flow metrics.
+- `simulation1_algorithms_results.txt`: Minimum-cost flow for given parameters
+- `simulation2_ford_fulkerson_results.txt`: Maximum flow metrics.
+- `simulation2_algorithms_results.txt`: Minimum-cost flow results for denser graphs
+
+Example file formats:
+- **Maximum Flow Results**:
+  ```
+  Graph                  fmax    |VLCC|    ∆out(LCC)    ∆in(LCC)    k(LCC)
+  graph_1.edges          50      45       10           12          0.08
+  ```
+- **Algorithm Results**:
+  ```
+  Algorithm    Graph   Flow   Cost   Paths   Mean Length   MPL
+  SSP          1       45     100    10      3.5           0.7
+  ```
+
+
+### **Graph Metrics**
+The project calculates the following metrics for each graph:
+- **|VLCC|**: Number of nodes in the largest connected component.
+- **∆out(LCC)**: Maximum out-degree in the LCC.
+- **∆in(LCC)**: Maximum in-degree in the LCC.
+- **k(LCC)**: Density of the LCC.
+
+The algorithm calculates the following metrics for each graph:
+- **Flow**: Maximum flow equal to demand.
+- **Cost**: Cost of generating maximum flow.
+- **Paths**: Number of augmented paths to generate maximum flow.
+- **Mean Length**: Average length of augmented paths
+- **Mean Propotional Length**: Average length of augmented paths as a fraction of longest acyclic paths from source to sink.
+---
