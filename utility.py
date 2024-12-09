@@ -109,18 +109,31 @@ def run_ford_fulkerson_and_write_results(graph, source, sink, file_path, filenam
     lcc = find_largest_connected_component(graph)
     metrics = calculate_graph_metrics(graph, lcc)
 
-    result_format = "{:<40}\t{:<10}\t{:<10}\t{:<12}\t{:<12}\t{:<10.4f}\n"
+    try:
+        parts = filename.split('_')
+        graph_id = parts[1]
+        n = parts[2][1:]
+        r = parts[3][1:]
+        upper_cap = parts[4][3:]
+        upper_cost = parts[5][4:].split('.')[0]
+    except Exception as e:
+        print(f"Error parsing filename '{filename}'")
+        graph_id , n, r, upper_cap, upper_cost = filename, "N/A", "N/A", "N/A", "N/A"
+
+    result_format = "{:<10}\t{:<5}\t{:<5}\t{:<10}\t{:<10}\t{:<10}\t{:<10}\t{:<12}\t{:<12}\t{:<10.4f}\n"
+
+
 
     with open(file_path, 'a', encoding='utf-8') as results:
-        results.write(result_format.format(
-            filename,
-            max_flow,
-            metrics['|VLCC|'],
-            metrics['∆out(LCC)'],
-            metrics['∆in(LCC)'],
-            metrics['k(LCC)']
-        ))
-        print(f"Processed {filename} | fmax: {max_flow}, Metrics: {metrics}")
+            results.write(result_format.format(
+                graph_id, n, r, upper_cap, upper_cost, max_flow,
+                max_flow,
+                metrics['|VLCC|'],
+                metrics['∆out(LCC)'],
+                metrics['∆in(LCC)'],
+                metrics['k(LCC)']
+            ))
+            print(f"Processed {filename} | fmax: {max_flow}, Metrics: {metrics}")
 
     return max_flow
 
@@ -256,11 +269,11 @@ def find_longest_acyclic_path(graph, source, sink):
     return distances[sink] if distances[sink] != float('-inf') else 0
 
 
-def print_results(flow, cost, num_paths, mean_length, mean_proportional_length, file_path, algo, graphNo):
+def print_results(flow, cost, num_paths, mean_length, mean_proportional_length, file_path, algo, filename):
     """
     Print algorithm results with formatted output.
     """
-    algo_header_format = "{:<15}\t{:<6}\t{:<8.4f}\t{:<12.4f}\t{:<10}\t{:<10.4f}\t{:<10.4f}"
+    algo_header_format = "{:<15}\t{:<15}\t{:<8.4f}\t{:<12.4f}\t{:<10}\t{:<10.4f}\t{:<10.4f}"
 
     if flow is not None:
         print(f"flow:{flow} | cost:{cost} | paths:{num_paths} | ML:{mean_length} | MPL:{mean_proportional_length}")
@@ -268,10 +281,17 @@ def print_results(flow, cost, num_paths, mean_length, mean_proportional_length, 
         print("\nFailed to meet the flow demand.")
     print("---------------------")
 
+    try:
+        parts = filename.split('_')
+        graph_id = parts[1]
+    except Exception as e:
+        print(f"Error parsing filename '{filename}'")
+        graph_id = filename
+
     with open(file_path, 'a', encoding='utf-8') as results:
         results.write(algo_header_format.format(
             algo,  # Algorithm name
-            graphNo,  # Graph number
+            graph_id,  # Graph number
             flow or 0,  # Flow (with fallback to 0 if None)
             cost or 0,  # Cost (with fallback to 0 if None)
             num_paths or 'N/A',  # Number of paths
