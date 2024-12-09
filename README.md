@@ -1,4 +1,3 @@
-
 # **Minimum-Cost Flow Simulation and Analysis**
 
 This project implements and analyzes multiple algorithms for solving **maximum flow** and **minimum-cost flow** problems on directed graphs. It includes graph generation, algorithmic simulations, and performance evaluation.
@@ -21,7 +20,8 @@ This project implements and analyzes multiple algorithms for solving **maximum f
 - **Successive Shortest Paths (SSP) with Capacity Scaling(SSPSC)**
   - Uses the shortest-cost paths from SSP and augments the flow by selecting capacity based on delta
 - **Primal Dual**
-  - (ADD DEFINITION HERE)
+  - The Primal-Dual Minimum Cost Flow Algorithm is an optimization technique designed to find the minimum-cost flow in a directed graph while satisfying flow constraints. 
+  - It iteratively    adjusts primal (flow) and dual (potential) variables to ensure feasibility and optimality. Below is an overview of its functionality and workflow.
 
 3. **Simulation**:
    - Processes multiple graph configurations and compares the performance of algorithms.
@@ -45,29 +45,13 @@ This project implements and analyzes multiple algorithms for solving **maximum f
 
 ---
 
-## **Setup and Requirements**
 
-### **Dependencies**
-Ensure the following Python libraries are installed:
-- `numpy`
-- `scipy`
-
-To install them, run:
-```bash
-pip install numpy scipy
-```
 
 ### **How to Run**
-1. Clone this repository.
-2. Navigate to the project directory:
-   ```bash
-   cd path/to/project
-   ```
-3. Execute the main script:
+1. Execute the main script:
    ```bash
    python main.py
    ```
-
 ---
 
 ## **Usage**
