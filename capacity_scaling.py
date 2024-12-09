@@ -1,6 +1,5 @@
 import math
 from utility import bellman_ford_capacity_scaling, find_longest_acyclic_path
-from collections import defaultdict
 
 # Capacity Scaling Algorithm
 
@@ -36,7 +35,7 @@ def capacity_scaling_with_metrics(graph, source, sink, demand):
 
     # Calculate metrics
     if demand > 0:
-        return None, -1, None,None,None  # Failure: Not enough flow to satisfy demand
+        return None, -1, None,None,None
     else:
         num_paths = len(augmenting_paths)
         mean_length = sum(path_lengths) / num_paths if num_paths > 0 else 0

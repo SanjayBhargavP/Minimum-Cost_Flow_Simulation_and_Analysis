@@ -1,5 +1,3 @@
-# graph.py
-
 from collections import defaultdict
 
 class Edge:
@@ -25,7 +23,6 @@ class Graph:
         backward_edge.reverse_edge = forward_edge
 
         self.adjacency_list[from_node].append(forward_edge)
-        # self.adjacency_list[to_node].append(backward_edge)
         self.edges.append(forward_edge)
 
     def get_neighbors(self, node):
