@@ -29,6 +29,7 @@ def bellman_ford(graph, s, t, delta):
 
 
 def successive_shortest_paths_with_scaling(graph, s, t, d):
+    print("==== Successive Shortest Path SC ====")
     f = 0  
     total_cost = 0
     delta = max(edge.capacity for edge in graph.edges)  

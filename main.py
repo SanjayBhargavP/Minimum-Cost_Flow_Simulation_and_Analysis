@@ -3,6 +3,7 @@
 import copy
 import os
 
+from SuccessiveShortestPathSC import successive_shortest_paths_with_scaling
 from capacity_scaling import capacity_scaling_with_metrics
 from source_sink_graph_generator import generate_graphs_for_simulation
 from successive_shortest_paths import successive_shortest_paths
@@ -93,6 +94,8 @@ for filename in os.listdir(simulation1_dir):
         flow,cost,paths,ml,mpl = capacity_scaling_with_metrics(graph_copy_cs, source, sink, demand)
         print_results(flow,cost,paths,ml,mpl,result_file2,algo_cs,graph_number)
         
+        flow,cost,paths,ml,mpl = successive_shortest_paths_with_scaling(graph_copy_cs, source, sink, demand)
+        print_results(flow,cost,paths,ml,mpl,result_file2,algo_cs,graph_number)
         with open(result_file2, 'a', encoding='utf-8') as results:
             results.write("-" * 110 + "\n")
 
