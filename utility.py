@@ -6,15 +6,6 @@ from collections import defaultdict, deque
 def ford_fulkerson_edmonds_karp(graph, source, sink):
     """
     Ford-Fulkerson Maximum Flow using Edmonds-Karp algorithm (BFS).
-
-    Parameters:
-    - graph: Graph object
-    - source: Starting node
-    - sink: Ending node
-
-    Returns:
-    - max_flow: The maximum flow found
-    - residual_graph: The resulting residual graph after computing max flow
     """
     max_flow = 0
     residual_graph = create_residual_graph(graph)
@@ -85,9 +76,6 @@ def bfs_for_flow(graph, source, sink):
 def calculate_graph_metrics(graph, lcc):
     """
     Calculates key metrics for the largest connected component (LCC).
-
-    Returns:
-    - metrics: Dictionary of graph metrics
     """
     in_degree = defaultdict(int)
     out_degree = defaultdict(int)
@@ -117,28 +105,14 @@ def calculate_graph_metrics(graph, lcc):
 def run_ford_fulkerson_and_write_results(graph, source, sink, file_path, filename):
     """
     Runs Ford-Fulkerson (Edmonds-Karp), calculates metrics, writes results, and returns fmax.
-
-    Parameters:
-    - graph: Graph object
-    - source: Source node
-    - sink: Sink node
-    - file_path: Path to save results
-    - filename: Current graph filename
-
-    Returns:
-    - fmax: The maximum flow found
     """
-    # Find LCC and Calculate Max Flow
     max_flow, residual_graph = ford_fulkerson_edmonds_karp(graph, source, sink)
     lcc = find_largest_connected_component(graph)
     metrics = calculate_graph_metrics(graph, lcc)
 
+    result_format = "{:<40}\t{:<10}\t{:<10}\t{:<12}\t{:<12}\t{:<10.4f}\n"
 
-#    Format the results writing
-    result_format = f"{{:<{36}}}\t{{:<8}}\t{{:<8}}\t{{:<10}}\t{{:<10}}\t{{:<8.4f}}\n"
-
-    # Write results to file
-    with open(file_path, 'a') as results:
+    with open(file_path, 'a', encoding='utf-8') as results:
         results.write(result_format.format(
             filename,
             max_flow,
@@ -181,9 +155,6 @@ def find_largest_connected_component(graph):
 def load_graph_from_file(filename):
     """
     Loads a graph from a file into a Graph object.
-
-    Returns:
-    - Graph: The loaded graph
     """
     from graph import Graph
 
@@ -197,6 +168,7 @@ def load_graph_from_file(filename):
     except FileNotFoundError:
         print(f"Error: File {filename} not found.")
     return graph
+
 
 # ----------------- BFS Farthest Node ----------------- #
 def bfs_farthest_node(graph, source):
@@ -226,34 +198,35 @@ def bfs_farthest_node(graph, source):
     print(f"Farthest Node from {source}: {farthest_node} (Distance: {max_distance})")
     return farthest_node
 
+
 def bellman_ford_capacity_scaling(graph, source, sink, delta):
-        """Shortest path algorithm to find minimum-cost augmenting paths."""
-        distance = {node: float('inf') for node in graph.adjacency_list}
-        parent = {node: None for node in graph.adjacency_list}
-        distance[source] = 0
+    """Shortest path algorithm to find minimum-cost augmenting paths."""
+    distance = {node: float('inf') for node in graph.adjacency_list}
+    parent = {node: None for node in graph.adjacency_list}
+    distance[source] = 0
 
-        for _ in range(len(graph.adjacency_list) - 1):
-            for edge in graph.edges:
-                if edge.capacity - edge.flow >= delta and distance[edge.from_node] + edge.cost < distance[edge.to_node]:
-                    distance[edge.to_node] = distance[edge.from_node] + edge.cost
-                    parent[edge.to_node] = edge
+    for _ in range(len(graph.adjacency_list) - 1):
+        for edge in graph.edges:
+            if edge.capacity - edge.flow >= delta and distance[edge.from_node] + edge.cost < distance[edge.to_node]:
+                distance[edge.to_node] = distance[edge.from_node] + edge.cost
+                parent[edge.to_node] = edge
 
-        # Check if sink is reachable
-        if distance[sink] == float('inf'):
-            return None, 0
+    # Check if sink is reachable
+    if distance[sink] == float('inf'):
+        return None, 0
 
-        # Backtrack to find the path
-        path = []
-        node = sink
-        while node != source:
-            edge = parent[node]
-            path.append(edge)
-            node = edge.from_node
-        path.reverse()
+    # Backtrack to find the path
+    path = []
+    node = sink
+    while node != source:
+        edge = parent[node]
+        path.append(edge)
+        node = edge.from_node
+    path.reverse()
 
-        # Determine the bottleneck capacity along the path
-        bottleneck = min(edge.capacity - edge.flow for edge in path)
-        return path, bottleneck
+    # Determine the bottleneck capacity along the path
+    bottleneck = min(edge.capacity - edge.flow for edge in path)
+    return path, bottleneck
 
 
 def find_longest_acyclic_path(graph, source, sink):
@@ -284,24 +257,26 @@ def find_longest_acyclic_path(graph, source, sink):
     return distances[sink] if distances[sink] != float('-inf') else 0
 
 
-def print_results(flow, cost, num_paths, mean_length, mean_proportional_length,file_path,algo,graphNo):
+def print_results(flow, cost, num_paths, mean_length, mean_proportional_length, file_path, algo, graphNo):
+    """
+    Print algorithm results with formatted output.
+    """
+    algo_header_format = "{:<15}\t{:<6}\t{:<8.4f}\t{:<12.4f}\t{:<10}\t{:<10.4f}\t{:<10.4f}"
+
     if flow is not None:
         print(f"flow:{flow} | cost:{cost} | paths:{num_paths} | ML:{mean_length} | MPL:{mean_proportional_length}")
     else:
         print("\nFailed to meet the flow demand.")
     print("---------------------")
 
-    algo_header_format = f"{{:<{15}}}\t{{:<6}}\t{{:<6.4f}}\t{{:<10.4f}}\t{{:<10}}\t{{:<8.4f}}\t{{:<8.4f}}"
-
-    with open(file_path, 'a') as results:
+    with open(file_path, 'a', encoding='utf-8') as results:
         results.write(algo_header_format.format(
-            algo,
-            graphNo,
-            flow,
-            cost,
-            num_paths,
-            mean_length,
-            mean_proportional_length
+            algo,  # Algorithm name
+            graphNo,  # Graph number
+            flow or 0,  # Flow (with fallback to 0 if None)
+            cost or 0,  # Cost (with fallback to 0 if None)
+            num_paths or 'N/A',  # Number of paths
+            mean_length or 0,  # Mean length
+            mean_proportional_length or 0  # Mean proportional length
         ))
         results.write("\n")
-

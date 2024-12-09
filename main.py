@@ -54,8 +54,8 @@ parameter_sets_simulation2 = [
 ]
 
 # Generate Graph Files
-generate_graphs_for_simulation(parameter_sets_simulation1, "Simulation1")
-generate_graphs_for_simulation(parameter_sets_simulation2, "Simulation2")
+#generate_graphs_for_simulation(parameter_sets_simulation1, "Simulation1")
+#generate_graphs_for_simulation(parameter_sets_simulation2, "Simulation2")
 
 # Define directories for simulation files
 simulation1_dir = "./Graphs/Simulation1"
@@ -76,7 +76,7 @@ max_filename_length2 = max(len(filename) for filename in os.listdir(simulation2_
 
 # Format headers with dynamic spacing
 ford_header_format = f"{{:<{max_filename_length1}}}\tfmax\t|VLCC|\t∆out(LCC)\t∆in(LCC)\tk(LCC)\n"
-algo_header_format = f"{{:<{15}}}\t{{:<6}}\t{{:<6}}\t{{:<10}}\t{{:<10}}\t{{:<8}}\t{{:<8}}"
+algo_header_format = f"{{:<15}}\t{{:<3}}\t{{:<12}}\t{{:<12}}\t{{:<12}}\t{{:<12}}\t{{:<12}}"
 
 # Create result files with headers for Simulation1
 with open(result_file1_simulation1, 'w', encoding='utf-8') as results:
