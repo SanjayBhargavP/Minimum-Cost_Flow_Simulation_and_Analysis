@@ -1,19 +1,15 @@
-# main.py
-
-# Standard Library Imports
 import copy
 import os
-import math
+
 
 # Graph Generation and Source-Sink Graph Tools
 from source_sink_graph_generator import generate_graphs_for_simulation
 
 # Graph Classes and Core Implementations
-from graph import Graph, Edge
 from capacity_scaling import capacity_scaling_with_metrics
 from successive_shortest_paths import successive_shortest_paths
 from successive_shortest_paths_capacity_scaling import successive_shortest_paths_capacity_scaling
-from primal_dual_algorithm import primal_dual_algorithm  # New import
+from primal_dual_algorithm import primal_dual_algorithm
 
 # Utility Functions
 from utility import (
@@ -21,13 +17,7 @@ from utility import (
     find_largest_connected_component,
     bfs_farthest_node,
     run_ford_fulkerson_and_write_results,
-    print_results,
-    ford_fulkerson_edmonds_karp,
-    create_residual_graph,
-    bfs_for_flow,
-    calculate_graph_metrics,
-    find_longest_acyclic_path,
-    bellman_ford_capacity_scaling
+    print_results
 )
 
 # Define parameter sets for Simulation1 and Simulation2
@@ -54,8 +44,8 @@ parameter_sets_simulation2 = [
 ]
 
 # Generate Graph Files
-#generate_graphs_for_simulation(parameter_sets_simulation1, "Simulation1")
-#generate_graphs_for_simulation(parameter_sets_simulation2, "Simulation2")
+generate_graphs_for_simulation(parameter_sets_simulation1, "Simulation1")
+generate_graphs_for_simulation(parameter_sets_simulation2, "Simulation2")
 
 # Define directories for simulation files
 simulation1_dir = "./Graphs/Simulation1"
