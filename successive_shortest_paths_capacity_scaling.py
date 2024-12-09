@@ -1,7 +1,5 @@
-# successive_shortest_paths_capacity_scaling.py
-
 import math
-from collections import defaultdict
+
 
 def successive_shortest_paths_capacity_scaling(graph, source, sink, demand):
     print("==== SUCCESSIVE SHORTEST PATHS WITH CAPACITY SCALING ====")

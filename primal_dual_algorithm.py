@@ -1,33 +1,13 @@
-import math
 from heapq import heappop, heappush
 
-
 def primal_dual_algorithm(graph, source, sink, total_demand):
-    """
-    Primal-Dual Algorithm for Minimum-Cost Flow
-
-    Parameters:
-    - graph: Graph object
-    - source: Source node
-    - sink: Sink node
-    - total_demand: Total flow demand
-
-    Returns:
-    - Total flow achieved
-    - Total cost of flow
-    - Number of augmenting paths
-    - Mean path length
-    - Mean proportional path length
-    """
     print("==== PRIMAL-DUAL MINIMUM COST FLOW ====")
 
-    # Initialize flow and tracking metrics
     total_flow = 0
     total_cost = 0
     augmenting_paths = 0
     path_lengths = []
 
-    # Create a copy of graph for modification
     graph_copy = {node: [{'to': e.to_node, 'capacity': e.capacity, 'cost': e.cost, 'reverse_flow': 0}
                          for e in graph.adjacency_list[node]]
                   for node in graph.adjacency_list}

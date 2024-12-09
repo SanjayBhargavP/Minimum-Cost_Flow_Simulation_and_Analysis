@@ -26,19 +26,6 @@ class DirectedGraph:
 
 
 def generate_sink_source_graph(n, r, upper_cap, upper_cost):
-    """
-    Generate a directed Euclidean neighbor graph.
-
-    Parameters:
-        n (int): Number of nodes
-        r (float): Maximum distance between nodes sharing an edge
-        upper_cap (int): Maximum capacity value
-        upper_cost (int): Maximum unit cost value
-
-    Returns:
-        DirectedGraph: The generated graph
-    """
-
     G = DirectedGraph()
 
     # Assign random coordinates to nodes

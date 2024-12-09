@@ -1,5 +1,3 @@
-# successive_shortest_paths.py
-
 # Bellman-Ford Algorithm
 def bellman_ford(graph, source):
     dist = {node: float('inf') for node in graph.adjacency_list.keys()}
