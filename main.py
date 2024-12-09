@@ -1,20 +1,36 @@
-#main.py
+# main.py
 
+# Standard Library Imports
 import copy
 import os
+import math
 
-from capacity_scaling import capacity_scaling_with_metrics
+# Graph Generation and Source-Sink Graph Tools
 from source_sink_graph_generator import generate_graphs_for_simulation
+
+# Graph Classes and Core Implementations
+from graph import Graph, Edge
+from capacity_scaling import capacity_scaling_with_metrics
 from successive_shortest_paths import successive_shortest_paths
+from successive_shortest_paths_capacity_scaling import successive_shortest_paths_capacity_scaling
+from primal_dual_algorithm import primal_dual_algorithm  # New import
+
+# Utility Functions
 from utility import (
     load_graph_from_file,
     find_largest_connected_component,
     bfs_farthest_node,
     run_ford_fulkerson_and_write_results,
-    print_results
+    print_results,
+    ford_fulkerson_edmonds_karp,
+    create_residual_graph,
+    bfs_for_flow,
+    calculate_graph_metrics,
+    find_longest_acyclic_path,
+    bellman_ford_capacity_scaling
 )
 
-# Define parameter sets for Simulation1
+# Define parameter sets for Simulation1 and Simulation2
 parameter_sets_simulation1 = [
     (100, 0.2, 8, 5),
     (200, 0.2, 8, 5),
@@ -26,81 +42,119 @@ parameter_sets_simulation1 = [
     (200, 0.3, 64, 20)
 ]
 
+parameter_sets_simulation2 = [
+    (150, 0.25, 16, 10),
+    (250, 0.25, 16, 10),
+    (150, 0.35, 16, 10),
+    (250, 0.35, 16, 10),
+    (150, 0.25, 128, 40),
+    (250, 0.25, 128, 40),
+    (150, 0.35, 128, 40),
+    (250, 0.35, 128, 40)
+]
+
 # Generate Graph Files
 generate_graphs_for_simulation(parameter_sets_simulation1, "Simulation1")
+generate_graphs_for_simulation(parameter_sets_simulation2, "Simulation2")
 
-# Define directory for Simulation1 files
+# Define directories for simulation files
 simulation1_dir = "./Graphs/Simulation1"
+simulation2_dir = "./Graphs/Simulation2"
 
-result_file1 = os.path.join("./Results", "simulation1_ford_fulkerson_results.txt")
-result_file2 = os.path.join("./Results","simulation1_algorithms_results.txt")
+# Create Results directory
 os.makedirs("./Results", exist_ok=True)
 
-# Determine the maximum filename length in the graph directory
-max_filename_length = max(len(filename) for filename in os.listdir(simulation1_dir) if filename.endswith(".edges"))
+# Define result file paths with simulation-specific prefixes
+result_file1_simulation1 = os.path.join("./Results", "simulation_one_ford_fulkerson_results.txt")
+result_file2_simulation1 = os.path.join("./Results", "simulation_one_algorithms_results.txt")
+result_file1_simulation2 = os.path.join("./Results", "simulation_two_ford_fulkerson_results.txt")
+result_file2_simulation2 = os.path.join("./Results", "simulation_two_algorithms_results.txt")
 
-# Format the header with dynamic spacing
-ford_header_format = f"{{:<{max_filename_length}}}\tfmax\t|VLCC|\t∆out(LCC)\t∆in(LCC)\tk(LCC)\n"
+# Determine the maximum filename length for each simulation
+max_filename_length1 = max(len(filename) for filename in os.listdir(simulation1_dir) if filename.endswith(".edges"))
+max_filename_length2 = max(len(filename) for filename in os.listdir(simulation2_dir) if filename.endswith(".edges"))
 
-# Create result file with headers
-with open(result_file1, 'w', encoding='utf-8') as results:
-    results.write(ford_header_format.format("Graph"))
-
+# Format headers with dynamic spacing
+ford_header_format = f"{{:<{max_filename_length1}}}\tfmax\t|VLCC|\t∆out(LCC)\t∆in(LCC)\tk(LCC)\n"
 algo_header_format = f"{{:<{15}}}\t{{:<6}}\t{{:<6}}\t{{:<10}}\t{{:<10}}\t{{:<8}}\t{{:<8}}"
 
-# Create result file with headers
-with open(result_file2, 'w', encoding='utf-8') as results:
-    results.write(algo_header_format.format("Algorithm","Graph","f","MC","paths","ML","MPL"))
+# Create result files with headers for Simulation1
+with open(result_file1_simulation1, 'w', encoding='utf-8') as results:
+    results.write(ford_header_format.format("Graph"))
+
+with open(result_file2_simulation1, 'w', encoding='utf-8') as results:
+    results.write(algo_header_format.format("Algorithm", "Graph", "f", "MC", "paths", "ML", "MPL"))
     results.write("\n")
 
-graph_number=1
+# Create result files with headers for Simulation2
+with open(result_file1_simulation2, 'w', encoding='utf-8') as results:
+    results.write(ford_header_format.format("Graph"))
+
+with open(result_file2_simulation2, 'w', encoding='utf-8') as results:
+    results.write(algo_header_format.format("Algorithm", "Graph", "f", "MC", "paths", "ML", "MPL"))
+    results.write("\n")
+
+# Algorithm identifiers
 algo_ssp = "SSP"
-algo_cs ="CS"
-algo_ssps="SSPCS"
-algo_yours="YOURS" ##CHANGE HERE
-# Process each graph file
-for filename in os.listdir(simulation1_dir):
-    if filename.endswith(".edges"):
-        file_path = os.path.join(simulation1_dir, filename)
+algo_cs = "CS"
+algo_sspcs = "SSPCS"
+algo_pd = "PD"
 
-        # Load graph
-        graph = load_graph_from_file(file_path)
+# Process Simulation1
+def process_simulation(simulation_dir, result_file1, result_file2, simulation_number):
+    graph_number = 1
+    for filename in os.listdir(simulation_dir):
+        if filename.endswith(".edges"):
+            file_path = os.path.join(simulation_dir, filename)
 
-        # Find the largest connected component (LCC)
-        lcc = find_largest_connected_component(graph)
+            # Load graph
+            graph = load_graph_from_file(file_path)
 
-        # Determine source and sink nodes
-        source = lcc[0]  # Start node from LCC
-        sink = bfs_farthest_node(graph, source)
+            # Find the largest connected component (LCC)
+            lcc = find_largest_connected_component(graph)
 
-        print("Source:{}".format(source))
-        print("Sink:{}".format(sink))
+            # Determine source and sink nodes
+            source = lcc[0]  # Start node from LCC
+            sink = bfs_farthest_node(graph, source)
 
-        graph_copy_ssp = copy.deepcopy(graph)
-        graph_copy_cs = copy.deepcopy(graph)
+            print(f"Simulation {simulation_number} - Source:{source}")
+            print(f"Simulation {simulation_number} - Sink:{sink}")
 
+            # Create deep copies of graph for each algorithm
+            graph_copy_ssp = copy.deepcopy(graph)
+            graph_copy_cs = copy.deepcopy(graph)
+            graph_copy_sspcs = copy.deepcopy(graph)
+            graph_copy_pd = copy.deepcopy(graph)
 
-        # Run algorithm and write results
-        fmax = run_ford_fulkerson_and_write_results(graph, source, sink, result_file1, filename)
-        demand = 0.95*fmax
-        
-        print("Max flow using Ford Fulkerson={}".format(fmax))
-        print("Demand={}".format(demand))
-        print()
+            # Run algorithm and write results
+            fmax = run_ford_fulkerson_and_write_results(graph, source, sink, result_file1, filename)
+            demand = 0.95 * fmax
 
-        flow,cost,paths,ml,mpl = successive_shortest_paths(graph_copy_ssp, source, sink, demand)
-        print_results(flow,cost,paths,ml,mpl,result_file2,algo_ssp,graph_number)
-        flow,cost,paths,ml,mpl = capacity_scaling_with_metrics(graph_copy_cs, source, sink, demand)
-        print_results(flow,cost,paths,ml,mpl,result_file2,algo_cs,graph_number)
-        
-        with open(result_file2, 'a', encoding='utf-8') as results:
-            results.write("-" * 110 + "\n")
+            print(f"Simulation {simulation_number} - Max flow using Ford Fulkerson = {fmax}")
+            print(f"Simulation {simulation_number} - Demand = {demand}")
+            print()
 
-        graph_number+=1
+            # Run and print results for each algorithm
+            flow, cost, paths, ml, mpl = successive_shortest_paths(graph_copy_ssp, source, sink, demand)
+            print_results(flow, cost, paths, ml, mpl, result_file2, algo_ssp, graph_number)
 
-print("Simulation1 processing completed.")
+            flow, cost, paths, ml, mpl = capacity_scaling_with_metrics(graph_copy_cs, source, sink, demand)
+            print_results(flow, cost, paths, ml, mpl, result_file2, algo_cs, graph_number)
 
+            flow, cost, paths, ml, mpl = successive_shortest_paths_capacity_scaling(graph_copy_sspcs, source, sink, demand)
+            print_results(flow, cost, paths, ml, mpl, result_file2, algo_sspcs, graph_number)
 
+            # Run Primal-Dual Algorithm
+            flow, cost, paths, ml, mpl = primal_dual_algorithm(graph_copy_pd, source, sink, demand)
+            print_results(flow, cost, paths, ml, mpl, result_file2, algo_pd, graph_number)
 
+            with open(result_file2, 'a', encoding='utf-8') as results:
+                results.write("-" * 110 + "\n")
 
+            graph_number += 1
 
+# Process both simulations
+process_simulation(simulation1_dir, result_file1_simulation1, result_file2_simulation1, 1)
+process_simulation(simulation2_dir, result_file1_simulation2, result_file2_simulation2, 2)
+
+print("Simulation processing completed.")
