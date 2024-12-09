@@ -126,7 +126,7 @@ def run_ford_fulkerson_and_write_results(graph, source, sink, file_path, filenam
 
     with open(file_path, 'a', encoding='utf-8') as results:
             results.write(result_format.format(
-                graph_id, n, r, upper_cap, upper_cost, max_flow,
+                graph_id, n, r, upper_cap, upper_cost,
                 max_flow,
                 metrics['|VLCC|'],
                 metrics['∆out(LCC)'],
