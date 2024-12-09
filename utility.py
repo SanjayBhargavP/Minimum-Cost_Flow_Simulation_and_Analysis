@@ -200,34 +200,28 @@ def load_graph_from_file(filename):
 
 # ----------------- BFS Farthest Node ----------------- #
 def bfs_farthest_node(graph, source):
-    """
-    Finds the farthest node from the source using BFS.
-
-    Parameters:
-    - graph: The Graph object
-    - source: Starting node (source node)
-
-    Returns:
-    - farthest_node: The node farthest from the source
-    """
-    visited = set()
+    visited = set([source])
     queue = deque([(source, 0)])
     farthest_node = source
     max_distance = 0
 
     while queue:
-        current, distance = queue.popleft()
+        current, current_distance = queue.popleft()
+
+        # Update farthest node if current distance is greater
+        if current_distance > max_distance:
+            max_distance = current_distance
+            farthest_node = current
 
         for edge in graph.adjacency_list[current]:
             next_node = edge.to_node
 
             if next_node not in visited:
                 visited.add(next_node)
-                queue.append((next_node, distance + 1))
+                queue.append((next_node, current_distance + 1))
 
-                if distance + 1 > max_distance:
-                    max_distance = distance + 1
-                    farthest_node = next_node
+    # Adjust max_distance to reflect the path length
+    max_distance += 1
 
     print(f"Farthest Node from {source}: {farthest_node} (Distance: {max_distance})")
     return farthest_node
