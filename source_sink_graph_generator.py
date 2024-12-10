@@ -89,7 +89,7 @@ def generate_graphs_for_simulation(parameter_sets, simulation_name):
         G = generate_sink_source_graph(n, r, upper_cap, upper_cost)
 
         # Create filename
-        filename = f"graph_{i}_n{n}_r{r}_cap{upper_cap}_cost{upper_cost}.edges"
+        filename = f"graph_{i}_n{n}_r{r}_cap{upper_cap}_cost{upper_cost}.txt"
 
         # Save the graph
         save_graph_to_file(G, folder_path, filename)

@@ -61,8 +61,8 @@ result_file1_simulation2 = os.path.join("./Results", "simulation_two_ford_fulker
 result_file2_simulation2 = os.path.join("./Results", "simulation_two_algorithms_results.txt")
 
 # Determine the maximum filename length for each simulation
-max_filename_length1 = max(len(filename) for filename in os.listdir(simulation1_dir) if filename.endswith(".edges"))
-max_filename_length2 = max(len(filename) for filename in os.listdir(simulation2_dir) if filename.endswith(".edges"))
+max_filename_length1 = max(len(filename) for filename in os.listdir(simulation1_dir))
+max_filename_length2 = max(len(filename) for filename in os.listdir(simulation2_dir))
 
 # Format headers with dynamic spacing
 ford_header_format =  f"{{:<10}}\t{{:<5}}\t{{:<5}}\t{{:<10}}\t{{:<10}}\t{{:<10}}\t{{:<10}}\t{{:<12}}\t{{:<12}}\t{{:<11}}\n"
